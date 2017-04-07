@@ -1,46 +1,55 @@
 "use strict";
 
 /**
+ * Check valid integer as string
+ * @param i
+ * @returns {boolean}
+ */
+function isNumber(i) {
+    return (i == parseInt(i));
+}
+
+/**
  * Check ipv4 format
  * @param ipv4
  * @returns {boolean}
  */
-function checkIPv4 (ipv4) {
+function checkIPv4(ipv4) {
     var ip = ipv4.split(".");
     if (ip.length !== 4) {
         return false;
     }
     var valid = true;
     ip.forEach(function (octet, i) {
-        if (isNaN(octet) || octet > 255 || octet < 0) {
+        if (!isNumber(octet) || octet > 255 || octet < 0) {
             valid = false;
         }
     });
     return valid;
- }
+}
 
 /**
  * Check ip v6 format
  * @param ipv6
  * @returns {boolean}
  */
-function checkIPv6 (ipv6) {
+function checkIPv6(ipv6) {
     return (/^(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}$/ig).test(ipv6);
- }
+}
 
 /**
  * Get version of ip
  * @param ip
  * @returns {number}
  */
-function getIpVersion (ip) {
+function getIpVersion(ip) {
     if (this.checkIPv4(ip)) {
         return 4;
     } else if (this.checkIPv6(ip)) {
         return 6;
     }
     return 0;
- }
+}
 
 /**
  * Convert ip to int
@@ -54,7 +63,7 @@ function fomIPv4toLong(ip) {
         ipl += parseInt(octet);
     });
     return (ipl >>> 0);
- }
+}
 
 /**
  * Convert int to ip
@@ -66,26 +75,51 @@ function fromLongToIPv4(ipl) {
     (ipl >> 16 & 255) + '.' +
     (ipl >> 8 & 255) + '.' +
     (ipl & 255) );
- }
+}
 /**
  * Get CIDR start and end networking
- * @param cidrv4
+ * @param netmask
  * @returns {{}}
  */
-function CIDRv4ToRange (cidrv4) {
-    var range = { }
-    cidrv4 = cidrv4.split('/');
-    var net = parseInt(cidrv4[1]);
-    range.start = this.fromLongToIPv4(this.fomIPv4toLong(cidrv4[0]) & ((-1 << (32 - net))));
+function convertCIDRv4ToRange(netmask) {
+    var range = {};
+    netmask = netmask.split('/');
+    var mask = fromMaskToCidr(netmask[1]);
+    if (!mask || !checkIPv4(netmask[0])) {
+        return false;
+    }
+    range.start = this.fromLongToIPv4(this.fomIPv4toLong(netmask[0]) & ((-1 << (32 - mask))));
     var start = this.fomIPv4toLong(range.start);
-    range.end = this.fromLongToIPv4(start + Math.pow(2, (32 - net)) - 1);
+    range.end = this.fromLongToIPv4(start + Math.pow(2, (32 - mask)) - 1);
     return range;
- }
+}
+/**
+ * For net configuration you can use 192.168.0.0/24 or 192.168.0.0/255.255.255.0
+ * this method return CIDR diapason or false
+ * @param mask
+ * @returns {int}
+ */
+function fromMaskToCidr(mask) {
+    if (isNumber(mask) && ( 0 < mask < 33)) {
+        return mask;
+    } else if (checkIPv4(mask)) {
+        var match = fomIPv4toLong(mask).toString(2).split(/^(1*)0*$/gi);
+        if (match[1] && !isNaN(match[1].length) && match[1].length) {
+            return match[1].length;
+        }
+    }
+    return false;
+}
 
-
+/**
+ * Exports to soft
+ */
 exports.checkIPv4 = checkIPv4;
 exports.checkIPv6 = checkIPv6;
 exports.getIpVersion = getIpVersion;
+
 exports.fromLongToIPv4 = fromLongToIPv4;
 exports.fomIPv4toLong = fomIPv4toLong;
-exports.CIDRv4ToRange = CIDRv4ToRange;
+
+exports.convertCIDRv4ToRange = convertCIDRv4ToRange;
+exports.generateCIDRv4Mask = fromMaskToCidr;
