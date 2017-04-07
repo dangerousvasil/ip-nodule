@@ -3,7 +3,7 @@
 var assert = require("assert");
 var util = require("util");
 
-var ipNodule = new (require("../"))();
+var ipNodule = require("../");
 
 describe("cidrv4-toRange", function () {
 
@@ -14,7 +14,7 @@ describe("cidrv4-toRange", function () {
 
     ip4test.forEach(function (item) {
         it(item.cidr + " -> " + util.inspect(item.test), function () {
-            assert.deepEqual(ipNodule.cidrv4ToRange(item.cidr), item.test);
+            assert.deepEqual(ipNodule.CIDRv4ToRange(item.cidr), item.test);
         });
     });
 
