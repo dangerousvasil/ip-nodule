@@ -1,15 +1,12 @@
 "use strict";
 
-/* eslint-env mocha */
-
 var assert = require("assert");
 var util = require("util");
 
 var ipNodule = new (require("../"))();
 
-describe("ip-inCidr", function () {
+describe("ip-verions", function () {
 
-    console.log(ipNodule);
     var ip4test = [
         {ip: "212.212.100.110", test: true},
         {ip: "255.255.255.110", test: true},

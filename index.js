@@ -39,4 +39,31 @@ ipNodule.prototype.getIpVersion = function(ip) {
     return 0;
 };
 
+
+ipNodule.prototype.fomIPv4toLong = function toInt(ip){
+    var ipl=0;
+    ip.split('.').forEach(function( octet ) {
+        ipl<<=8;
+        ipl+=parseInt(octet);
+    });
+    return(ipl >>>0);
+};
+
+ipNodule.prototype.fromLongToIPv4 = function fromInt(ipl){
+    return ( (ipl>>>24) +'.' +
+    (ipl>>16 & 255) +'.' +
+    (ipl>>8 & 255) +'.' +
+    (ipl & 255) );
+};
+
+ipNodule.prototype.cidrv4ToRange = function(cidrv4) {
+    var range = {};
+    cidrv4 = cidrv4.split('/');
+    var net = parseInt(cidrv4[1]);
+    range.start = this.fromLongToIPv4(this.fomIPv4toLong(cidrv4[0]) & ((-1 << (32 - net))));
+    var start = this.fomIPv4toLong(range.start);
+    range.end = this.fromLongToIPv4(start + Math.pow(2, (32 - net)) - 1);
+    return range;
+}
+
 module.exports = ipNodule;
