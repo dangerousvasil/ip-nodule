@@ -10,6 +10,7 @@ describe("ip-verions", function () {
     var ip4test = [
         {ip: "212.212.100.110", test: true},
         {ip: "255.255.255.110", test: true},
+        {ip: "25e.255.255.110", test: false},
         {ip: "1.1.1.110", test: true},
         {ip: "0000:0000:0000:0000:0000:0000:0000:0001", test: false}
     ];
@@ -20,20 +21,27 @@ describe("ip-verions", function () {
         });
     });
 
-    ip4test.forEach(function (item) {
+    var ip6test = [
+        {ip: "212.212.100.110", test: true},
+        {ip: "255.255.255.110", test: true},
+        {ip: "1.1.1.110", test: true},
+        {ip: "0000:0000:0000:0000:0000:0000:0000:0001", test: false}
+    ];
+
+    ip6test.forEach(function (item) {
         it(item.ip + " -> " + util.inspect((!item.test)), function () {
             assert.deepEqual(ipNodule.checkIPv6(item.ip), (!item.test));
         });
     });
 
-    var ip4version = [
+    var ipversion = [
         {ip: "212.212.100.110", test: 4},
         {ip: "255.255.255.110", test: 4},
         {ip: "1.1.1.110", test: 4},
         {ip: "0000:0000:0000:0000:0000:0000:0000:0001", test: 6}
     ];
 
-    ip4version.forEach(function (item) {
+    ipversion.forEach(function (item) {
         it(item.ip + " -> " + util.inspect(item.test), function () {
             assert.deepEqual(ipNodule.getIpVersion(item.ip), item.test);
         });
