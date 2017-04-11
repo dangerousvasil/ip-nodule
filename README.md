@@ -35,8 +35,26 @@ var range = ipNodule.cidrv4ToRange(cidr);
 ```
 Method will return 
 ```
-range = { start: '212.212.100.0', end: '212.212.100.255'};
+ range = {
+    broadcast: "212.212.100.255",
+    end: "212.212.100.254",
+    network: "212.212.100.0",
+    start: "212.212.100.1"};
+```
+If net mask 32 or 31 you will get another result
+```
+vat net31 = {
+    start: '212.212.100.110',
+    end: '212.212.100.111',
+    broadcast: "point to point"
+};
+var net32 = {
+    start: '212.212.100.110',
+    end: '212.212.100.110',
+    broadcast: 'single IP'
+};
 
 ```
+
 
   
